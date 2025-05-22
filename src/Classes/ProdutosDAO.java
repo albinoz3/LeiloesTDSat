@@ -11,17 +11,12 @@ public class ProdutosDAO {
     Connection conn;
     PreparedStatement st;
     ResultSet resultset;
+    conectaDAO conexao = new conectaDAO();
     private static final String TABELA = "produtos";
-    
+    //Orgizando as conexão
     public boolean conectar() {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11", "root", "Smeagol!2580");
-            return true;
-        } catch (ClassNotFoundException | SQLException ex) {
-            System.out.println("Erro ao conectar: " + ex.getMessage());
-            return false;
-        }
+        conn = conexao.connectDB();
+        return( conn != null);
     }
     
     public void cadastrarProduto(ProdutosDTO produto) {
@@ -175,18 +170,6 @@ public class ProdutosDAO {
     }
     
     public void desconectar() {
-        try {
-            if (resultset != null && !resultset.isClosed()) {
-                resultset.close();
-            }
-            if (st != null && !st.isClosed()) {
-                st.close();
-            }
-            if (conn != null && !conn.isClosed()) {
-                conn.close();
-            }
-        } catch (SQLException ex) {
-            System.out.println("Erro ao fechar conexões: " + ex.getMessage());
-        }
+        conexao.desconectar();
     }
 }

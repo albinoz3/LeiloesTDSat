@@ -1,25 +1,19 @@
-
 import Classes.ProdutosDTO;
 import Classes.ProdutosDAO;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import javax.swing.JOptionPane;
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author Adm
- */
 public class cadastroVIEW extends javax.swing.JFrame {
 
-    /**
-     * Creates new form cadastroVIEW
-     */
     public cadastroVIEW() {
         initComponents();
     }
-
+private void limparCampos() {
+        cadastroNome.setText("");
+        cadastroValor.setText("");
+        cadastroNome.requestFocus();
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -144,17 +138,49 @@ public class cadastroVIEW extends javax.swing.JFrame {
     }//GEN-LAST:event_cadastroNomeActionPerformed
 
     private void btnCadastrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCadastrarActionPerformed
+        if (cadastroNome.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "O nome do produto é obrigatório!", "Erro de validação", JOptionPane.ERROR_MESSAGE);
+            cadastroNome.requestFocus();
+            return;
+        }
+        if (cadastroValor.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "O valor do produto é obrigatório!", "Erro de validação", JOptionPane.ERROR_MESSAGE);
+            cadastroValor.requestFocus();
+            return;
+        }try {
         ProdutosDTO produto = new ProdutosDTO();
-        String nome = cadastroNome.getText();
-        String valor = cadastroValor.getText();
+        String nome = cadastroNome.getText().trim();
+        String valorStr = cadastroValor.getText().trim();
         String status = "A Venda";
-        produto.setNome(nome);
-        produto.setValor(Double.parseDouble(valor));
-        produto.setStatus(status);
+        double valor;
+        try {
+                valor = Double.parseDouble(valorStr);
+                if (valor <= 0) {
+                    JOptionPane.showMessageDialog(this, "O valor deve ser maior que zero!", "Erro de validação", JOptionPane.ERROR_MESSAGE);
+                    cadastroValor.requestFocus();
+                    return;
+                }
+            }catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Valor inválido! Digite apenas números.", "Erro de conversão", JOptionPane.ERROR_MESSAGE);
+                cadastroValor.requestFocus();
+                return;
+            }
+            produto.setNome(nome);
+            produto.setValor(valor);
+            produto.setStatus(status);
         
         ProdutosDAO produtodao = new ProdutosDAO();
-        produtodao.cadastrarProduto(produto);
-        
+        int resultado = produtodao.salvar(produto);
+        if (resultado > 0) {
+                JOptionPane.showMessageDialog(this, "Produto cadastrado com sucesso!", "Cadastro realizado", JOptionPane.INFORMATION_MESSAGE);
+                limparCampos();
+            } else {
+                JOptionPane.showMessageDialog(this, "Erro ao cadastrar o produto. Tente novamente.", "Erro de cadastro", JOptionPane.ERROR_MESSAGE);
+            }
+}
+         catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Erro ao processar o cadastro: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_btnCadastrarActionPerformed
 
     private void btnProdutosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProdutosActionPerformed

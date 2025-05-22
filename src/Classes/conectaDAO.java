@@ -8,28 +8,40 @@ import javax.swing.JOptionPane;
 
 
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-
-/**
- *
- * @author Adm
- */
 public class conectaDAO {
     
-    public Connection connectDB(){
+    private Connection conn;
+    
+    public Connection connectDB() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11?useSSL=false", "root", "Smeagol!2580");
+            return conn;
+        } catch (ClassNotFoundException | SQLException ex) {
+            System.out.println("Erro ao conectar: " + ex.getMessage());
+            return null;
+        }
+    }
+    public boolean conectar(){
         Connection conn = null;
         
         try {
-        
-            conn = DriverManager.getConnection("jdbc:mysql://localhost/uc11?user=root&password=");
+           Class.forName("com.mysql.cj.jdbc.Driver");
+        conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11?useSSL=false", "root", "Smeagol!2580");
+        return true; 
             
-        } catch (SQLException erro){
-            JOptionPane.showMessageDialog(null, "Erro ConectaDAO" + erro.getMessage());
+        } catch (ClassNotFoundException | SQLException ex){
+            System.out.println("Erro ao conectar: " + ex.getMessage());
+        return false;
         }
-        return conn;
+     
+    }public void desconectar(){
+        try{
+            if(conn != null && !conn.isClosed()){
+            conn.close();
+            }
+        }catch(SQLException ex){
+            System.out.println("Erro ao desconectar:");
+        }
     }
-    
 }
