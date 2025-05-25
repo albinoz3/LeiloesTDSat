@@ -17,8 +17,25 @@ public class vendasVIEW extends javax.swing.JFrame {
      */
     public vendasVIEW() {
         initComponents();
+        carregarProdutosVendidos();
        
     }
+    private void carregarProdutosVendidos() {
+    ProdutosDAO dao = new ProdutosDAO();
+    ArrayList<ProdutosDTO> lista = dao.listarProdutosVendidos();
+
+    DefaultTableModel model = (DefaultTableModel) jTable1.getModel();
+    model.setRowCount(0); // Limpa a tabela
+
+    for (ProdutosDTO produto : lista) {
+        model.addRow(new Object[]{
+            produto.getId(),
+            produto.getNome(),
+            produto.getValor(),
+            produto.getStatus()
+        });
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
