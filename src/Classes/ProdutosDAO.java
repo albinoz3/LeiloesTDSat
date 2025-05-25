@@ -73,7 +73,50 @@ public class ProdutosDAO {
         
         return listagem;
     }
-    
+    public boolean venderProduto(int id) {
+        boolean atualizado = false;
+        if (conectar()) {
+            try {
+                String sql = "UPDATE " + TABELA + " SET status = ? WHERE id = ?";
+                st = conn.prepareStatement(sql);
+                st.setString(1, "Vendido");
+                st.setInt(2, id);
+                atualizado = st.executeUpdate() > 0;
+            } catch (SQLException ex) {
+                System.out.println("Erro ao vender produto (atualizar status): " + ex.getMessage());
+            } finally {
+                desconectar();
+            }
+        }
+        return atualizado;
+    }
+    public ArrayList<ProdutosDTO> listarProdutosVendidos() {
+        ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+        
+        if (conectar()) {
+            try {
+                String sql = "SELECT * FROM " + TABELA + " WHERE status = ?";
+                st = conn.prepareStatement(sql);
+                st.setString(1, "Vendido");
+                resultset = st.executeQuery(); 
+                while (resultset.next()) {
+                    ProdutosDTO produto = new ProdutosDTO();
+                    produto.setId(resultset.getInt("id"));
+                    produto.setNome(resultset.getString("nome"));
+                    produto.setValor(resultset.getDouble("valor"));
+                    produto.setStatus(resultset.getString("status"));
+                    
+                    listagem.add(produto);
+                }
+            } catch (SQLException ex) {
+                System.out.println("Erro ao listar produtos vendidos: " + ex.getMessage());
+            } finally {
+                desconectar();
+            }
+        }
+        
+        return listagem;
+    }
     public boolean atualizar(ProdutosDTO produto) {
         boolean atualizado = false;
         if (conectar()) {
